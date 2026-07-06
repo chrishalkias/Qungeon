@@ -1,6 +1,8 @@
 import pygame
 from collections import OrderedDict
 import enum
+import cirq
+import numpy as np
 from scripts.common_functions import add_text
 import unitary.alpha as alpha
 from scripts.flip_phase import FlipPhase
@@ -38,6 +40,28 @@ x_gate_image = pygame.image.load('./assets/x-gate.png')
 SCALE_FACTOR = 4
 BLOCK_SIZE = 16 * SCALE_FACTOR
 PEEK_COUNT = 1000
+# A pillar is walkable only when it is exactly |0>. We read that from the
+# world's exact state vector (below) rather than the 1000-shot peek, so the
+# decision is deterministic; PURE_ZERO_TOL just absorbs float rounding.
+PURE_ZERO_TOL = 1e-9
+
+
+def exact_probability_zero(world, obj):
+    """Exact P(|0>) for a qubit, from the world's state vector.
+
+    get_probabilities() samples the world (1000 shots), so a state merely
+    close to |0> can occasionally read as pure and flip a pillar's
+    passability with no state change. Simulating the stored circuit gives the
+    exact probability instead, which is deterministic.
+    """
+    result = cirq.Simulator().simulate(world.circuit)
+    index = result.qubit_map[obj.qubit]
+    num_qubits = len(result.qubit_map)
+    probabilities = np.abs(result.final_state_vector) ** 2
+    return float(sum(
+        amp for state, amp in enumerate(probabilities)
+        if (state >> (num_qubits - 1 - index)) & 1 == 0
+    ))
 
 class Pillar(enum.Enum):
     """Enumeration for quantum object states."""
@@ -148,9 +172,12 @@ class QuantumObject(BaseObject, alpha.QuantumObject):
         self.change_color(pillar_image, self.color, color_alpha)
 
     def function(self, game, x, y):
-        """Checks if the quantum object's state allows interaction at the specified position. Called when player moves to tile object is in."""
-        if game.objects[str(x) + "," + str(y)].states[0] == 1.0:
-            return True
+        """Passable only when the pillar is deterministically in a pure |0> state.
+
+        Called when the player tries to move onto the pillar's tile.
+        """
+        obj = game.objects[str(x) + "," + str(y)]
+        return exact_probability_zero(game.quantum_grid, obj) >= 1.0 - PURE_ZERO_TOL
 
 class Tile(BaseObject):
     """Represents a tile on the game board."""
