@@ -3,7 +3,7 @@ class Group:
     def __init__(self):
         """Initializes a new group with no objects and no states."""
         self.objects = []
-        self.states = None
+        self.states = {}  # correlation histogram; empty until an effect is applied
 
 class GroupingSystem:
     """Manages groups of objects and their merging in the game."""
