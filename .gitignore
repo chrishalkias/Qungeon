@@ -1,4 +1,5 @@
 requirements.in
+QungeonEnv/
 level_editor.py
 __pycache__
 tests.py
