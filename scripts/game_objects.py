@@ -73,7 +73,6 @@ class TileType(enum.Enum):
     EMPTY = 0
     START = 1
     END = 2
-    DEL = 3
     WALL = 4
 
 class BaseObject(pygame.sprite.Sprite):
@@ -133,6 +132,7 @@ class QuantumObject(BaseObject, alpha.QuantumObject):
         self.color = None
 
         self.phase_Z = False
+        self.control = None
         game.quantum_grid.add_object(self)
         self.states = game.quantum_grid.get_probabilities([self], PEEK_COUNT)[0]
         self.group = game.grouping_system.add(self)
@@ -156,7 +156,6 @@ class QuantumObject(BaseObject, alpha.QuantumObject):
                 reference_obj.apply_effect(game)
             else:
                 effect(self)
-            game.effect_history.append([effect, str(self.position[0]) + "," + str(self.position[1])])
 
             ordered_dict = OrderedDict(sorted(game.quantum_grid.get_correlated_histogram(self.group.objects, count=PEEK_COUNT).items()))
             self.group.states = ordered_dict
@@ -185,13 +184,12 @@ class Tile(BaseObject):
         """Initializes the tile with type and position."""
         super().__init__(x, y)
         self.type = type
-        if type:
-            if type == TileType.END:
-                image = end_tile_image
-            elif type == TileType.WALL:
-                image = wall_tile_image
-            else:
-                image = tile_image
+        if type == TileType.END:
+            image = end_tile_image
+        elif type == TileType.WALL:
+            image = wall_tile_image
+        else:
+            image = tile_image
 
         tile_rect = image.get_rect()
         self.image = pygame.transform.scale(image, (int(tile_rect.width * SCALE_FACTOR), int(tile_rect.height * SCALE_FACTOR)))

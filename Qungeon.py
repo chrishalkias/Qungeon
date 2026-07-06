@@ -47,8 +47,7 @@ class Game:
         self.screen = pygame.display.set_mode((800, 600))
         self.tiles = {}
         self.objects = {}
-        self.effect_history = []
-        
+
         self.grouping_system = GroupingSystem()
         self.quantum_grid = alpha.QuantumWorld()
         self.object_sprites = pygame.sprite.Group()
@@ -120,7 +119,6 @@ class Game:
         self.quantum_grid.clear()
         self.grouping_system.groups.clear()
         self.grouping_system.count = 0
-        self.effect_history.clear()
 
     def hop_animation(self, start_pos, end_pos):
         """Animates the player's movement with a hopping effect."""

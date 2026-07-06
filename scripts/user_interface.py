@@ -115,10 +115,6 @@ class Hotbar(pygame.sprite.Sprite):
                     self.remove_by_key(key)
                     break
 
-    def handle_mouse_up(self):
-        """Placeholder for handling mouse release events."""
-        pass
-    
     def update_slots(self):
         """Updates the position of all item slots in the hotbar."""
         for i, (name, slot) in enumerate(self.slots.items()):

@@ -8,7 +8,7 @@ arbitrary code via eval()/getattr().
 """
 
 REQUIRED_KEYS = ("tiles", "objects", "quantum_objects", "gates", "effects")
-VALID_TILES = {"EMPTY", "START", "END", "DEL", "WALL"}
+VALID_TILES = {"EMPTY", "START", "END", "WALL"}
 VALID_GATES = {"X", "H", "Z", "RotY", "CNOT", "CHAD"}
 VALID_EFFECTS = {"Flip", "Superposition", "Phase"}
 
