@@ -13,7 +13,7 @@ Requires python3.8 or higher
 
 First create a virtual environment and install the requirements.txt for example: 
   python3 -m venv QungeonEnv                    (creates the environment)
-  source Qungeon/bin/activate                   (activates environment)
+  source QungeonEnv/bin/activate                (activates environment)
   pip install -r requirements.txt               (installs the required packages)
 
 After doing the above the game can be played by doing:
@@ -24,6 +24,7 @@ Below are the controls for the game.
 
 WASD - movement
 R - Restart level
+Q - Quit game
 
 Click and drag gates from your inventory onto quantum objects to change their states.
 A blue pillar is in state |1>, a white/transparent pillar is in a pure |0> state, when a pillar is red it is very close to |0>.
