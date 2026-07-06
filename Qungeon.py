@@ -274,8 +274,6 @@ class Game:
             self.update_position(event.key)
         elif event.key == K_r:
             self.load_level(f"./levels/{self.current_level}.json")
-        elif event.key == K_i:
-            self.import_level()
 
 
 if __name__ == "__main__":
