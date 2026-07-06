@@ -112,6 +112,9 @@ class Game:
         self.hotbar.slots.clear()
         self.hotbar.sprites.empty()
         self.quantum_grid.clear()
+        self.grouping_system.groups.clear()
+        self.grouping_system.count = 0
+        self.effect_history.clear()
 
     def hop_animation(self, start_pos, end_pos):
         """Animates the player's movement with a hopping effect."""
