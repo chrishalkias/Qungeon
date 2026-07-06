@@ -241,7 +241,7 @@ class Game:
                         if object != entangled_object:
                             start_pos = ((object.position[0] + 0.5) * BLOCK_SIZE, (object.position[1] + 0.5) * BLOCK_SIZE)
                             end_pos = ((entangled_object.position[0] + 0.5) * BLOCK_SIZE, (entangled_object.position[1] + 0.5) * BLOCK_SIZE)
-                            pygame.draw.line(self.screen, (255, 255, 255), start_pos, end_pos, width=2)
+                            pygame.draw.line(self.screen, (60, 60, 200), start_pos, end_pos, width=2)
 
     # Below functions are for the main game loop.
     def run(self):
