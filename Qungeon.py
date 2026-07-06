@@ -293,5 +293,8 @@ if __name__ == "__main__":
     parser.add_argument('level', nargs='?', type=int, default=DEFAULT_START_LEVEL, help='The starting level of the game (default is 1)')
     args = parser.parse_args()
 
+    if not os.path.isfile(f"./levels/{args.level}.json"):
+        parser.error(f"level {args.level} does not exist")
+
     game_instance = Game(args)
     game_instance.run()
