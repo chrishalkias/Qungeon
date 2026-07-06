@@ -9,6 +9,7 @@ from scripts.grouping_system import *
 from scripts.user_interface import *
 from scripts.game_objects import *
 from scripts.common_functions import *
+from scripts.level_validation import validate_level, parse_pos, LevelError
 
 
 # Constants
@@ -61,47 +62,52 @@ class Game:
         self.load_level(f"./levels/{self.current_level}.json")
     
     def load_level(self, filename):
-        """Loads and parses the game level from a JSON file."""
-        with open(filename, "r") as file:
-            self.clean_up()
+        """Loads and parses the game level from a JSON file.
 
+        Validates the file before clean_up() so a malformed level never
+        destroys the currently loaded game. Raises LevelError on bad data.
+        """
+        with open(filename, "r") as file:
             level_data = json.load(file)
 
-            for pos_str, tile_type_str in level_data["tiles"].items():
-                x, y = eval(pos_str)
-                tile_type = TileType[tile_type_str]
-                tile = Tile(x, y, tile_type)
-                self.tiles[(x, y)] = tile
-                self.tile_sprites.add(tile)
+        validate_level(level_data, filename)
+        self.clean_up()
 
-                if tile_type == TileType.START:
-                    self.player = Player(x, y)
+        for pos_str, tile_type_str in level_data["tiles"].items():
+            x, y = parse_pos(pos_str)
+            tile_type = TileType[tile_type_str]
+            tile = Tile(x, y, tile_type)
+            self.tiles[(x, y)] = tile
+            self.tile_sprites.add(tile)
 
-            for position, item in level_data["objects"].items():
-                x, y = eval(position)
-  
-                new_obj = LootableObject(item, x, y)                    
-                self.objects[str(x) + "," + str(y)] = new_obj
-                self.object_sprites.add(new_obj)
-            
-            for position in level_data["quantum_objects"]:
-                x, y = eval(position)
-                new_obj = QuantumObject(x, y, self)
-                self.objects[str(x) + "," + str(y)] = new_obj
-                self.object_sprites.add(new_obj)
+            if tile_type == TileType.START:
+                self.player = Player(x, y)
 
-            for gate, count in level_data["gates"].items():
-                self.hotbar.add_item(gate, count)
+        for position, item in level_data["objects"].items():
+            x, y = parse_pos(position)
 
-            for effect_entry in level_data["effects"]:
-                x, y = eval(effect_entry["position"])
-                effect = getattr(alpha, effect_entry["effect"])()
+            new_obj = LootableObject(item, x, y)
+            self.objects[str(x) + "," + str(y)] = new_obj
+            self.object_sprites.add(new_obj)
 
-                if "target" in effect_entry:
-                    target_x, target_y = eval(effect_entry["target"])
-                    effect = [effect, [target_x, target_y]]
+        for position in level_data["quantum_objects"]:
+            x, y = parse_pos(position)
+            new_obj = QuantumObject(x, y, self)
+            self.objects[str(x) + "," + str(y)] = new_obj
+            self.object_sprites.add(new_obj)
 
-                self.objects[str(x) + "," + str(y)].apply_effect(self, effect)
+        for gate, count in level_data["gates"].items():
+            self.hotbar.add_item(gate, count)
+
+        for effect_entry in level_data["effects"]:
+            x, y = parse_pos(effect_entry["position"])
+            effect = getattr(alpha, effect_entry["effect"])()
+
+            if "target" in effect_entry:
+                target_x, target_y = parse_pos(effect_entry["target"])
+                effect = [effect, [target_x, target_y]]
+
+            self.objects[str(x) + "," + str(y)].apply_effect(self, effect)
                 
     def clean_up(self):
         """Resets and clears all game objects, tiles, and hotbar slots when loading a new level."""
@@ -276,7 +282,10 @@ class Game:
         elif event.key in [K_w, K_s, K_a, K_d]:
             self.update_position(event.key)
         elif event.key == K_r:
-            self.load_level(f"./levels/{self.current_level}.json")
+            try:
+                self.load_level(f"./levels/{self.current_level}.json")
+            except LevelError as err:
+                print(f"Could not restart level: {err}")
 
 
 if __name__ == "__main__":
