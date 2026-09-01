@@ -2,6 +2,8 @@
 Simple puzzle game, reach the end to complete a level. This can be done by using gates in your toolbar ("bag") to manipulating the quantum state of pillars.
 The player has to be next to an object to interact with it!
 
+![The player next to a loot box and a pillar in state |1>](assets/screenshot.png)
+
 # Unitary Libary
 The game was made using the Unitary library, which handles most of the quantum logic. More information can be found at:
 https://github.com/quantumlib/unitary

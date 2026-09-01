@@ -43,7 +43,7 @@ PEEK_COUNT = 1000
 # A pillar is walkable only when it is exactly |0>. We read that from the
 # world's exact state vector (below) rather than the 1000-shot peek, so the
 # decision is deterministic; PURE_ZERO_TOL just absorbs float rounding.
-PURE_ZERO_TOL = 1e-9
+PURE_ZERO_TOL = 1e-6  # cirq simulates in complex64; ~1e-7 rounding is the floor
 
 
 def exact_probability_zero(world, obj):

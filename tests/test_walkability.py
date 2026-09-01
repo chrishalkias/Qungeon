@@ -31,6 +31,17 @@ def test_pure_zero_is_passable():
     assert pillar.function(g, 5, 4) is True
 
 
+def test_level2_is_solvable():
+    """Two-qubit worlds round to ~0.9999999 in cirq's complex64 sim, so a
+    tolerance tighter than that makes every multi-pillar level unwinnable."""
+    g = Game(argparse.Namespace(level=2))
+    superposed, flipped = g.objects["5,4"], g.objects["6,4"]
+    superposed.apply_effect(g, gates["H"])  # H . H -> |0>
+    flipped.apply_effect(g, gates["X"])     # X . X -> |0>
+    assert superposed.function(g, 5, 4) is True
+    assert flipped.function(g, 6, 4) is True
+
+
 def test_roty_never_flips_passability_without_state_change():
     g = Game(argparse.Namespace(level=1))
     pillar = g.objects["5,4"]
@@ -41,5 +52,6 @@ def test_roty_never_flips_passability_without_state_change():
 
 if __name__ == "__main__":
     test_pure_zero_is_passable()
+    test_level2_is_solvable()
     test_roty_never_flips_passability_without_state_change()
     print("walkability checks passed")
